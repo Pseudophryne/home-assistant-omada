@@ -1,7 +1,7 @@
 ---
 name: Omada Controller Latest
-# image: dratrav/home-assistant-omada-beta # <-- comment out for local build
-version: 5.14.32.3
+image: dratrav/home-assistant-omada-beta # <-- comment out for local build
+version: 5.14.32.2
 slug: omada_controller_latest
 description: TP-Link Omada Controller (latest)
 webui: https://[HOST]:[PORT:8043]
