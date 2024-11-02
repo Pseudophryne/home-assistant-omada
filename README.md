@@ -5,7 +5,7 @@ This add-on brings the Omada Controller directly into Home Assistant running on 
 There exist two Add-On-Versions:
 
 - Omada Stable
-- Omada Beta
+- Omada Latest
 
 Omada Stable is created from Omada Beta (both in this repository), as soon as the beta add-on is updated to the latest
 stable upstream version. Omada Beta should also be fairly stable, because the Add-On is mostly consistent with the already tested [docker-omada-cotroller](https://github.com/mbentley/docker-omada-controller), but might contain some Home-Assistant related inconsistencies or bugs.
@@ -17,7 +17,7 @@ Installing third-party repositories:
 1. Go to home assistant -> settings -> addons -> addon store
 2. Click the hamburger menu (The three dots in the top right corner)
 3. Click repositories
-4. At the bottom there should be a space to paste the GitHub link: https://github.com/jkunczik/home-assistant-omada
+4. At the bottom there should be a space to paste the GitHub link: https://github.com/Pseudophryne/home-assistant-omada
 5. You might have to refresh the page, but it should show up in the addon store under "Home Assistant Omada"
 
 ## Options
@@ -34,7 +34,7 @@ The default paths are compatible with the `Letsencrypt` Add-On.
 ## Update to a new version
 
 To update the controller to a new version, the changes of Matt Bentleys docker-omada-controller are manually merged into `Omada Beta`. The following steps have to be done:
-- 1. Move the current configuration of `Omada Beta` to `Omda Stable`
+- 1. Move the current configuration of `Omada Beta` to `Omada Stable`
 - 2. make sure that there are no changes in the Dockerfile
 - 3. If there are changes in install.sh, copy it over, while keeping the Home Assistant specific processing steps in the bottom of the file. Add `aarch64` to the supported mongod architectures (`case "${ARCH}" in amd64|arm64|aarch64|"")`)
 - 4. If there are changes in entrypoint.sh, replace the old contents with the new, keeping the Home Assistant specific steps in the top of the file. Also, change the `echo` to proper `bashio::log` statements as described in the file.

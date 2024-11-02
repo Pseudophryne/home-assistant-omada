@@ -10,7 +10,7 @@ arch:
   - aarch64
   - amd64
 init: false
-url: https://github.com/jkunczik/home-assistant-omada
+url: https://github.com/Pseudophryne/home-assistant-omada
 map:
   - ssl
 options:
