@@ -77,7 +77,7 @@ case "${NO_MONGODB}" in
   *)
     # include mongodb
     case "${ARCH}" in
-      amd64|arm64|aarch64"")
+      amd64|arm64|aarch64|"")
         PKGS+=( mongodb-server-core )
         ;;
       armv7l)
