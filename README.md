@@ -2,7 +2,7 @@
 
 This add-on brings the Omada Controller directly into Home Assistant running on an 64 bit ARM or a x64 processor.
 
-There exist two Add-On-Versions:
+This varies to https://github.com/jkunczik/home-assistant-omada removing Stable and referencing only the Latest version:
 
 - Omada Latest
 
