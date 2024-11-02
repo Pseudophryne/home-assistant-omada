@@ -1,7 +1,10 @@
 # Changelog
 
+## 5.14.32.3 - 2024-11-2
+- Updated to the upstream version 5.14.32.3
+
 ## 5.14.32.2 - 2024-09-5
-### WARNING BREAKIN CHANGES PLEASE BACKUP YOUR OMADA CONFIGURATION TO RESTORE IT AFTER THIS UPDATE
+### WARNING BREAKING CHANGES PLEASE BACKUP YOUR OMADA CONFIGURATION TO RESTORE IT AFTER THIS UPDATE
 - Updated to the upstream version 5.14.32.2
 - fully merged all files (`install.sh`, `entrypoint.sh`, `Dockerfile`)
 - only storing essential data (`data` and `logs`) in the persistent `/data` volume
