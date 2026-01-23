@@ -4,14 +4,22 @@
 
 This add-on integrates the Omada Controller directly into Home Assistant, supporting both 64-bit ARM and x64 processors.
 
-**NOTE** To upgrade to v6, install the new `Omada Stable v6` add-on! 
+**NOTE** To upgrade to v6, install the new `Omada Stable v6` add-on!
 This requires manually backing up the old stable v5 add-on and apply it to the new stable v6 add-on.
 
 ## Add-On Versions
 
-- **Omada Stable v6**: This is the new stable branch, starting from the new major version 6.
-- **Omada Stable**: Old stable branch for Omada v5 releases
-- **Omada Beta**: Omada beta releases
+- **Omada Stable v6**: The new stable branch, starting from Omada major version 6.
+  - **Requires:** Modern x86_64 CPU (with AVX support) OR ARM64 CPU with ARMv8.2 support (e.g. Raspberry Pi 5).
+  - **Incompatible with:** Raspberry Pi 4 (ARMv8.0) and older x86 CPUs without AVX.
+- **Omada Stable v6 NO-AVX**: A special variant of the v6 add-on for older hardware.
+  - **Designed for:** Older x86_64 CPUs (e.g., Celeron J1900, older Pentium/Xeon) that lack AVX instructions.
+  - **Note:** This does **NOT** enable support for Raspberry Pi 4 (which fails due to missing ARMv8.2 instructions, unrelated to AVX).
+- **Omada Stable**: The legacy stable branch for Omada v5.
+  - **Recommended for:** Raspberry Pi 4 users and anyone who cannot upgrade to v6 due to hardware limitations.
+- **Omada Beta**: Contains beta releases of the Omada Controller.
+
+**NOTE:** To upgrade from v5 to v6, you must install the new `Omada Stable v6` add-on separately. This requires manually backing up your v5 configuration (via the Omada web interface) and restoring it into the new v6 instance. Automatic migration is not supported.
 
 ## Installation
 
@@ -53,54 +61,69 @@ Follow the documentation to configure Omada under `Additional Hosts` as follows:
 
 ## Developing
 
-For local development, use the `Omada Dev` variant.
-This is where the source code resides and where changes can be made.
-Follow the steps below to build and test a new Docker image:
+For local development, use the `Omada Dev` directory.
+A helper script `test_dev.sh` is provided in the root of the repository to simplify building and testing the add-on locally on your machine (macOS/Linux).
 
-### Build the Docker Image Locally
+### Local Testing with test_dev.sh
 
-Set the desired version and build the image:
+The script automatically detects your architecture and creates a mock Home Assistant environment with a valid `options.json`.
 
 ```bash
-# INSTALL_VER should match the version in the config.yaml
-INSTALL_VER="5.14.32.4"
-docker build . -t omada_stable --build-arg "INSTALL_VER=$INSTALL_VER"
+# Run the test script (auto-detects architecture, uses default version)
+./test_dev.sh
+
+# Run with specific Architecture
+./test_dev.sh amd64
+
+# Run with specific Architecture and Version
+./test_dev.sh aarch64 beta-6.0.0.23
+
+# Run with specific Architecture, Version and Image Name
+./test_dev.sh amd64 beta-6.0.0.23 my-custom-omada:test
 ```
 
-### Run the Docker Container Locally
+The Web UI will be available at `https://localhost:8043`. You can inspect the logs directly in your terminal.
+
+### Manual Build (Alternative)
+
+If you prefer to build manually, ensure you provide the required build arguments:
 
 ```bash
-docker run --rm -p 8043:8043 -v vol_omada_stable:/data omada_stable
+# Build from the repository root
+docker build \
+  --build-arg BUILD_ARCH=amd64 \
+  --build-arg INSTALL_VER=6.0.0.23 \
+  -t omada-dev:local \
+  "Omada Dev"
 ```
 
 Refer to the
 [Home Assistant Add-On Testing Documentation](https://developers.home-assistant.io/docs/add-ons/testing)
-for more details and best practices.
+for more details on how to test within a full Home Assistant environment.
 
 ### Releasing a New Version
 
-1. Update the `mbentley` submodule to the latest `master` branch.
-2. Update the version in `config.yaml` for either `beta` or `stable`.
+1. Update the version in `config.yaml` for either `beta` or `stable`.
    Ensure the version matches one listed in
    [this script](https://github.com/mbentley/docker-omada-controller-url/blob/master/omada_ver_to_url.sh).
    If it is needed to make a new add-on release for the same Omada version,
    a `-ha{d}` suffix can be added to the Omada version.
-3. Thoroughly test the changes in a local environment.
+2. Thoroughly test the changes in a local environment.
    Once the tests pass and you're satisfied, create a pull request (PR) with the updates.
-4. The pipeline will build docker images for every branch,
+3. The pipeline will build docker images for every branch,
    but only push the images to the registry on `master`.
 
 ## Contribution
 
-This add-on wraps Matt Bentley’s
-[docker-omada-controller](https://github.com/mbentley/docker-omada-controller),
-which is included as a Git submodule.
-Special thanks to DraTrav and contributors for advancing this project.
+This add-on was originally inspired by Matt Bentley’s
+[docker-omada-controller](https://github.com/mbentley/docker-omada-controller).
+Special thanks to contributors for advancing this project.
 This add-on was made possible thanks to their outstanding work.
 
 Key differences from the original:
 
 - Persistent data is stored in the `/data` directory, making it compatible with Home Assistant.
+- Managed via S6-Overlay for Home Assistant compatibility.
 
 Contributions are welcome! Feel free to submit pull requests for version updates, bug fixes, or new features.
 

@@ -1,8 +1,9 @@
 ---
-name: Omada Controller Dev
-version: beta-6.1.0.19
-slug: omada_controller_dev
-description: TP-Link Omada Controller software
+name: Omada Controller Stable NO-AVX
+image: jeruntu/home-assistant-omada-stable-no-avx
+version: 6.1.0.19
+slug: omada_controller_stable_no_avx
+description: TP-Link Omada Controller software (No AVX support for older CPUs)
 webui: https://[HOST]:[PORT:8043]
 startup: application
 arch:
