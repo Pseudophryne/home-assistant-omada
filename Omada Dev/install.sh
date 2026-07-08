@@ -8,6 +8,9 @@ OMADA_DIR="/opt/tplink/EAPController"
 ARCH="${ARCH:-}"
 INSTALL_VER="${INSTALL_VER:-}"
 
+# Normalize aarch64 (HA supervisor convention) → arm64 (buildx convention)
+[ "${ARCH}" = "aarch64" ] && ARCH="arm64"
+
 # Ensure architecture is supported
 case "${ARCH}" in
   amd64|arm64) ;;
@@ -20,6 +23,7 @@ apt-get update
 apt-get install --no-install-recommends -y \
   ca-certificates \
   unzip \
+  util-linux \
   wget \
   gosu \
   libharfbuzz0b \
@@ -48,10 +52,20 @@ echo "Installing Omada Controller v${OMADA_VER} (Major: ${OMADA_MAJOR_VER}) for 
 
 # Install MongoDB
 if [ "${OMADA_MAJOR_VER}" = "6" ]; then
-  # Install MongoDB 8.0 for Omada v6
   apt-get install --no-install-recommends -y gnupg
-  wget -q -O - https://www.mongodb.org/static/pgp/server-8.0.asc | gpg -o /etc/apt/keyrings/mongodb-server-8.0.gpg --dearmor
-  echo "deb [arch=${ARCH} signed-by=/etc/apt/keyrings/mongodb-server-8.0.gpg] https://repo.mongodb.org/apt/ubuntu $(eval "$(grep '^VERSION_CODENAME=' /etc/os-release)"; echo "${VERSION_CODENAME}")/mongodb-org/8.0 multiverse" > /etc/apt/sources.list.d/mongodb-org-8.0.list
+  eval "$(grep '^VERSION_CODENAME=' /etc/os-release)"
+  if [ "${ARCH}" = "arm64" ] && [ "${VERSION_CODENAME}" = "jammy" ]; then
+    # MongoDB 8.0 tcmalloc requires 1GB-aligned mmap regions unavailable in HA OS containers.
+    # MongoDB 7.0 avoids this; its packages are only available for jammy (Ubuntu 22.04), so
+    # this path is taken only when the base image is Ubuntu 22.04 (i.e. the haos.dockerfile).
+    MONGO_VER="7.0"
+  else
+    MONGO_VER="8.0"
+  fi
+  wget -q -O - "https://www.mongodb.org/static/pgp/server-${MONGO_VER}.asc" \
+    | gpg -o "/etc/apt/keyrings/mongodb-server-${MONGO_VER}.gpg" --dearmor
+  echo "deb [arch=${ARCH} signed-by=/etc/apt/keyrings/mongodb-server-${MONGO_VER}.gpg] https://repo.mongodb.org/apt/ubuntu ${VERSION_CODENAME}/mongodb-org/${MONGO_VER} multiverse" \
+    > "/etc/apt/sources.list.d/mongodb-org-${MONGO_VER}.list"
   apt-get update
   apt-get install --no-install-recommends -y mongodb-org-server
 else

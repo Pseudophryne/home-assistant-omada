@@ -40,7 +40,10 @@ cat > "${TEST_DIR}/data/options.json" <<EOF
 {
   "enable_hass_ssl": false,
   "certfile": "/ssl/fullchain.pem",
-  "keyfile": "/ssl/privkey.pem"
+  "keyfile": "/ssl/privkey.pem",
+  "upgrade_https_port": 8043,
+  "show_mongodb_logs": false,
+  "show_server_logs": true
 }
 EOF
 
